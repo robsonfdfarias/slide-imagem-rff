@@ -63,7 +63,7 @@ function slide_image_rff_recuperar_dados(){
 function slide_image_rff_excluir_dados($id, $img){
     $imgParts = explode('/', $img);
     $imgPath = SI_RFF_DIR_IMG.$imgParts[(sizeof($imgParts)-1)];
-    echo '<h1>Url da img a ser Excluida: '.$imgPath.'</h1>';
+    // echo '<h1>Url da img a ser Excluida: '.$imgPath.'</h1>';
     if(file_exists($imgPath)){
         if(unlink($imgPath)){
             echo '<div class="notice notice-success is-dismissible"><p>Imagem excluída com sucesso!</p></div>';
