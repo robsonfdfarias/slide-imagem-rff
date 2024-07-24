@@ -12,7 +12,7 @@
  //Registrar tipos e campos no GraphQl
  add_action('graphql_register_types', 'register_custom_table_si_rff_in_graphql');
  function register_custom_table_si_rff_in_graphql(){
-    register_graphql_object_type('CustomTableType', [
+    register_graphql_object_type('CustomTableTypeSiRff', [
         'fields' => [
             'id' => [
                 'type' => 'ID',
@@ -38,7 +38,7 @@
     ]);
 
     register_graphql_field('RootQuery', 'slide_image_rff', [
-        'type'=>['list_of' => 'CustomTableType'],
+        'type'=>['list_of' => 'CustomTableTypeSiRff'],
         'description' => __('Query de consulta da tabela', 'your-textdomain'),
         'resolve' => function($root, $args, $context, $info){
             global $wpdb;
