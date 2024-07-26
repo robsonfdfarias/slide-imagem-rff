@@ -9,6 +9,7 @@
     die();
  }
 
+
 /**
    * Includes PHP
    */
@@ -35,42 +36,122 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
 
  function slide_image_rff_admin_page(){
     // slide_image_rff_install();
+    $style_select = "padding: 5px 15px; font-weight: bold; text-transform: uppercase; margin-top:-5px";
     ?>
     <div class="wrap">
         <h1>Configuração do Slide Imagem RFF </h1>
-        <form method="post" action="" enctype="multipart/form-data">
+        <h2>Slides cadastrados</h2>
+        <form method="post" action="" id="si-rff-form">
+            <input type="text" name="titleSlide" placeholder="Digite o título" value="">
+            <select className="si-rff-status" name="slideStatus" style="<?php echo $style_select; ?>">
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+            </select>
+            <input type="submit" class="si-rff-bt-submit" id="cadastrar_slide_name" name="cadastrar_slide_name" value="Cadastrar slide">
+        </form>
+    </div>
+    <?php
+    ////////////////////////////////////////////////////
+    if(isset($_POST['cadastrar_slide_name'])){
+        if((!isset($_POST['titleSlide']) || $_POST['titleSlide'] == '') && (!isset($_POST['slideStatus']) || $_POST['slideStatus'] == '')){
+            echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
+        }else{
+            $slideTitulo = sanitize_text_field($_POST['titleSlide']);
+            $slideStatus = sanitize_text_field($_POST['slideStatus']);
+            slide_image_name_rff_gravar_dados($slideTitulo, $slideStatus);
+            echo '<div class="notice notice-success is-dismissible"><p>Slide cadastrado com sucesso!</p></div>';
+        }
+    }else if(isset($_POST['EditarSlide'])){
+        if((!isset($_POST['idSlide']) || $_POST['idSlide'] == '') && (!isset($_POST['titleSlide']) || $_POST['titleSlide'] == '') && (!isset($_POST['slideStatus']) || $_POST['slideStatus'] == '')){
+            echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
+        }else{
+            $idSlide = sanitize_text_field($_POST['idSlide']);
+            $slideTitulo = sanitize_text_field($_POST['titleSlide']);
+            $slideStatus = sanitize_text_field($_POST['slideStatus']);
+            //A mensagem com o status da atualização é retornada pela função slide_image_name_rff_editar_dados
+            slide_image_name_rff_editar_dados($idSlide, $slideTitulo, $slideStatus);
+        }
+    }
+
+    $slideDados = slide_image_name_rff_recuperar_dados();
+    if($slideDados){
+        echo '<br><strong>Dados Gravados</strong>';
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Ações</th></tr></thead>';
+        echo '<tbody>';
+        foreach($slideDados as $slideDado){
+            echo '<tr>';
+            echo '<form method="post" action="" enctype="multipart/form-data">';
+            echo '<td><input type="hidden" value="'.esc_html($slideDado->id).'" name="idSlide" id="idSlide" />' . esc_html($slideDado->id) . '</td>';
+            echo '<td><input type="text" value="' . esc_html($slideDado->title) . '" name="titleSlide" id="titleSlide" placeholder="Digite o título" /></td>';
+            echo '<td><select className="si-rff-status" name="slideStatus" style="'.$style_select.'; margin:0px;">
+                    <option value="'.esc_html($slideDado->slideStatus).'">-> '.$slideDado->slideStatus.' <-</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
+                  </select></td>';
+            // echo '<td><input type="text" value="' . esc_html($slideDado->slideStatus) . '" name="slideStatus" id="slideStatus" /></td>';
+            echo '<td><input type="submit" class="si-rff-bt-submit" id="EditarSlide" name="EditarSlide" value="Editar" /><input type="submit" class="si-rff-bt-submit" id="ExcluirSlide" name="ExcluirSlide" value="Excluir" /></td>';
+            echo '</form>';
+            echo '</tr>';
+        }
+        echo '</tbody>';
+        echo '</table>';
+    }
+    ////////////////////////////////////////////////////
+    ?>
+    <div class="wrap">
+        <h2>Conteúdo dos slides </h2>
+        <form method="post" action="" enctype="multipart/form-data" id="si-rff-form">
             <input type="text" name="title" placeholder="Digite o título" value="">
             <!-- <input type="text" name="urlImg" placeholder="Digite a url da imagem" value=""> -->
             <input type="file" name="urlImg" id="urlImg" accept="image/*">
             <input type="text" name="urlLink" placeholder="Digite a url do link" value="">
             <input type="text" name="altText" placeholder="Digite o texto que deve aparecer ao passar o mouse por cima da imagem" value="">
+            
+            <select className="si-rff-status" name="slideId" style="<?php echo $style_select; ?>">
+                <?php
+                    if($slideDados){
+                        foreach($slideDados as $slideDado){
+                            echo '<option value="'.esc_html($slideDado->id).'">'.esc_html($slideDado->title).'</option>';
+                        }
+                    }
+                ?>
+            </select>
             <input type="submit" class="si-rff-bt-submit" id="Enviar" name="Enviar" value="Enviar">
         </form>
     </div>
     <?php
-    if(isset($_POST['Editar']) && isset($_POST['id']) && isset($_POST['title']) && isset($_POST['urlImg']) && isset($_POST['urlLink']) && isset($_POST['altText'])){
-        if($_POST['id']!='' && $_POST['title']!='' && $_POST['urlImg']!='' && $_POST['urlLink']!='' && $_POST['altText']!=''){
-            slide_image_rff_editar_dados($_POST['id'], $_POST['title'], $_POST['urlImg'], $_POST['urlLink'], $_POST['altText']);
-            echo '<div class="notice notice-success is-dismissible"><p>Dados alterados com sucesso!</p></div>';
+    if(isset($_POST['Editar']) && isset($_POST['id']) && isset($_POST['title']) && isset($_POST['urlImg']) && isset($_POST['urlLink']) && isset($_POST['altText']) && isset($_POST['slideId']) && $_POST['slideId']!=''){
+        if($_POST['id']!='' && $_POST['title']!='' && $_POST['urlImg']!='' && $_POST['urlLink']!='' && $_POST['altText']!='' && isset($_POST['slideId']) && $_POST['slideId']!=''){
+            //A mensagem com o status da atualização é retornada pela função slide_image_rff_editar_dados()
+            slide_image_rff_editar_dados(
+                $_POST['id'], 
+                $_POST['title'], 
+                $_POST['urlImg'], 
+                $_POST['urlLink'], 
+                $_POST['altText'], 
+                $_POST['slideId']
+            );
         }else{
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
         }
-    }else if (isset($_POST['Enviar']) && isset($_POST['title']) && !empty($_FILES['urlImg']['name']) && isset($_POST['urlLink']) && isset($_POST['altText'])) {
-        if($_POST['title']!='' && $_POST['urlLink']!='' && $_POST['altText']!=''){
+    }else if (isset($_POST['Enviar'])) {
+        if($_POST['title']!='' && $_POST['urlLink']!='' && $_POST['altText']!='' && isset($_POST['title']) && !empty($_FILES['urlImg']['name']) && isset($_POST['urlLink']) && isset($_POST['altText']) && isset($_POST['slideId']) && $_POST['slideId']!=''){
             $title = sanitize_text_field($_POST['title']);
             $urlImg = $_FILES['urlImg'];
             $urlLink = sanitize_text_field($_POST['urlLink']);
             $altText = sanitize_text_field($_POST['altText']);
+            $slideId = sanitize_text_field($_POST['slideId']);
             // printf($urlImg);
             $image = uploadImage_si_rff($urlImg);
             // echo '//-----------------------------------//<br>';
             // echo $image;
             // echo '<br>........................................';
             // menuImage_rff_gravar_dados($title, $urlImg, $urlLink, $altText);
-            slide_image_rff_gravar_dados($title, $image, $urlLink, $altText);
+            slide_image_rff_gravar_dados($title, $image, $urlLink, $altText, $slideId);
             echo '<div class="notice notice-success is-dismissible"><p>Dados gravados com sucesso!</p></div>';
         }else{
-            echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
+            echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos! Lembre de ter pelo menos um slide cadastrado para adicionar um item</p></div>';
         }
     }else if(isset($_POST['Excluir']) && isset($_POST['id'])){
         if($_POST['id']!=''){
@@ -85,11 +166,12 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
     $dados = slide_image_rff_recuperar_dados();
     if ($dados) {
         // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
-        echo '<h2>Dados Gravados</h2>';
+        echo '<br><strong>Dados Gravados</strong>';
         echo '<table class="wp-list-table widefat fixed striped">';
-        echo '<thead><tr><th>ID</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Ações</th></tr></thead>';
+        echo '<thead><tr><th>ID</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Ações</th></tr></thead>';
         echo '<tbody>';
         foreach ($dados as $dado) {
+            $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
             echo '<tr>';
             echo '<form method="post" action="" enctype="multipart/form-data">';
             echo '<td><input type="hidden" value="'.esc_html($dado->id).'" name="id" id="id" />' . esc_html($dado->id) . '</td>';
@@ -98,6 +180,14 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
             echo '<td>' . '<img src="'.$dado->urlImg.'" class="si-rff-img-admin"><input type="hidden" name="urlImg" id="urlImg" value="'.$dado->urlImg.'" /></td>';
             echo '<td><input type="text" value="' . esc_html($dado->urlLink) . '" name="urlLink" id="urlLink" placeholder="Digite a url do link" /></td>';
             echo '<td><input type="text" value="' . esc_html($dado->altText) . '" name="altText" id="altText" placeholder="Digite o texto alternativo" /></td>';
+            echo '<td><select className="si-rff-status" name="slideId" style="'.$style_select.'; margin:0px;">
+                        <option value="'.esc_html($slideSel->id).'">-> <span class="selSpan">'.esc_html($slideSel->title).'</span> <-</option>';
+                        if($slideDados){
+                            foreach($slideDados as $slideDado){
+                                echo '<option value="'.esc_html($slideDado->id).'">'.esc_html($slideDado->title).'</option>';
+                            }
+                        }
+            echo        '</select></td>';
             echo '<td><input type="submit" class="si-rff-bt-submit" id="Editar" name="Editar" value="Editar" /><input type="submit" class="si-rff-bt-submit" id="Excluir" name="Excluir" value="Excluir" /></td>';
             echo '</form>';
             echo '</tr>';

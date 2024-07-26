@@ -1,8 +1,17 @@
-.si-rff-bt-submit {
-    padding: 10px 15px;
+.si-rff-img-admin {
+    max-width: 150px;
+    max-height: 100px;
 }
 
-.si-rff-img-admin {
-    max-width: 100px;
-    max-height: 100px;
+.si-rff-selSpan::first-letter {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#si-rff-form input[type='file'], input[type='text'] {
+    padding: 5px 10px;
+}
+
+.si-rff-bt-submit {
+    padding: 10px 15px;
 }
