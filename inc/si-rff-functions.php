@@ -31,6 +31,8 @@
         urlImg varchar(150) NOT NULL,
         urlLink varchar(150) NOT NULL,
         altText varchar(255),
+        orderItems mediumint(15),
+        statusItem varchar(20),
         tableId mediumint(9) NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (tableId) REFERENCES $table_name_slide(id)
@@ -122,13 +124,13 @@ function slide_image_name_rff_editar_dados($id, $title, $slideStatus){
 
 
 /**
- * CRUD tabela slide_imga_rff
+ * CRUD tabela slide_image_rff
  */
 //  global $wpdb;
  define('SI_RFF_TABLE_NAME', 'slide_image_rff');
 
 //Grava os dados na tabela
-function slide_image_rff_gravar_dados($titulo, $urlImg, $urlLink, $altText, $tableId){
+function slide_image_rff_gravar_dados($titulo, $urlImg, $urlLink, $altText, $tableId, $orderItems, $statusItem){
     global $wpdb;
     $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME;
     $wpdb->insert(
@@ -139,6 +141,8 @@ function slide_image_rff_gravar_dados($titulo, $urlImg, $urlLink, $altText, $tab
             'urlLink' => $urlLink,
             'altText' => $altText,
             'tableId' => $tableId,
+            'orderItems' => $orderItems,
+            'statusItem' => $statusItem,
         )
     );
 }
@@ -148,6 +152,14 @@ function slide_image_rff_recuperar_dados(){
     global $wpdb;
     $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME;
     $results = $wpdb->get_results("SELECT * FROM $table_name");
+    return $results;
+}
+
+//Recupera os dados da tabela por slide
+function slide_image_rff_recuperar_dados_by_slide($slideId){
+    global $wpdb;
+    $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME;
+    $results = $wpdb->get_results("SELECT * FROM $table_name WHERE tableId = $slideId");
     return $results;
 }
 
@@ -177,7 +189,7 @@ function slide_image_rff_excluir_dados($id, $img){
 }
 
 //Editar registro
-function slide_image_rff_editar_dados($id, $title, $urlImg, $urlLink, $altText, $tableId){
+function slide_image_rff_editar_dados($id, $title, $urlImg, $urlLink, $altText, $tableId, $orderItems, $statusItem){
     global $wpdb;
     $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME;
     $retorno = $wpdb->update(
@@ -188,6 +200,8 @@ function slide_image_rff_editar_dados($id, $title, $urlImg, $urlLink, $altText, 
             'urlLink' => $urlLink,
             'altText' => $altText,
             'tableId' => $tableId,
+            'orderItems' => $orderItems,
+            'statusItem' => $statusItem,
         ),
         array('id'=>$id), // Condição para atualizar (WHERE id = $id)
         array('%s'), // Tipo de dado dos valores novos (%s indica que o valor é uma string)

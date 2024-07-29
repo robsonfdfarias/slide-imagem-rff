@@ -19,6 +19,13 @@
 if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
     require_once(SI_RFF_CORE_INC.'si-rff-graphql.php');
 }
+if(file_exists( SI_RFF_CORE_INC.'si-rff-shortcode.php' )){
+  require_once( SI_RFF_CORE_INC.'si-rff-shortcode.php' );
+}
+// function add_font_awesome() {
+//     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+// }
+// add_action('wp_enqueue_scripts', 'add_font_awesome');
 
  //Adicionar menu na área administrativa
  add_action('admin_menu', 'slide_image_rff_add_admin_menu');
@@ -33,6 +40,11 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
         5 //Posição no menu
     );
  }
+
+ function load_dashicons() {
+    wp_enqueue_style('dashicons');
+}
+add_action('wp_enqueue_scripts', 'load_dashicons');
 
  function slide_image_rff_admin_page(){
     // slide_image_rff_install();
@@ -76,7 +88,7 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
     $slideDados = slide_image_name_rff_recuperar_dados();
     if($slideDados){
         echo '<br><strong>Dados Gravados</strong>';
-        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<table class="wp-list-table widefat fixed striped" style="table-layout: auto !important;">';
         echo '<thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Ações</th></tr></thead>';
         echo '<tbody>';
         foreach($slideDados as $slideDado){
@@ -102,9 +114,13 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
     <div class="wrap">
         <h2>Conteúdo dos slides </h2>
         <form method="post" action="" enctype="multipart/form-data" id="si-rff-form">
+            <input type="text" name="orderItems" placeholder="O número na order dos elementos" value="">
             <input type="text" name="title" placeholder="Digite o título" value="">
             <!-- <input type="text" name="urlImg" placeholder="Digite a url da imagem" value=""> -->
             <input type="file" name="urlImg" id="urlImg" accept="image/*">
+            <span id="infoBt" class="dashicons dashicons-info-outline" style="font-size:25px;vertical-align:text-bottom; padding-right: 1em;">
+                <div id="divInfo">A imagem deve ter 750px de largura por 235px de altura</div>
+            </span>
             <input type="text" name="urlLink" placeholder="Digite a url do link" value="">
             <input type="text" name="altText" placeholder="Digite o texto que deve aparecer ao passar o mouse por cima da imagem" value="">
             
@@ -117,7 +133,11 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
                     }
                 ?>
             </select>
-            <input type="submit" class="si-rff-bt-submit" id="Enviar" name="Enviar" value="Enviar">
+            <select className="si-rff-status" name="statusItem" style="<?php echo $style_select; ?>">
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+            </select>
+            <input type="submit" class="si-rff-bt-submit" id="Enviar" name="Enviar" value="Cadastrar">
         </form>
     </div>
     <?php
@@ -130,7 +150,9 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
                 $_POST['urlImg'], 
                 $_POST['urlLink'], 
                 $_POST['altText'], 
-                $_POST['slideId']
+                $_POST['slideId'],
+                $_POST['orderItems'],
+                $_POST['statusItem']
             );
         }else{
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
@@ -142,13 +164,15 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
             $urlLink = sanitize_text_field($_POST['urlLink']);
             $altText = sanitize_text_field($_POST['altText']);
             $slideId = sanitize_text_field($_POST['slideId']);
+            $orderItems = sanitize_text_field($_POST['orderItems']);
+            $statusItem = sanitize_text_field($_POST['statusItem']);
             // printf($urlImg);
             $image = uploadImage_si_rff($urlImg);
             // echo '//-----------------------------------//<br>';
             // echo $image;
             // echo '<br>........................................';
             // menuImage_rff_gravar_dados($title, $urlImg, $urlLink, $altText);
-            slide_image_rff_gravar_dados($title, $image, $urlLink, $altText, $slideId);
+            slide_image_rff_gravar_dados($title, $image, $urlLink, $altText, $slideId, $orderItems, $statusItem);
             echo '<div class="notice notice-success is-dismissible"><p>Dados gravados com sucesso!</p></div>';
         }else{
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos! Lembre de ter pelo menos um slide cadastrado para adicionar um item</p></div>';
@@ -163,18 +187,38 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
     }
     //
     //mostra os dados gravados
-    $dados = slide_image_rff_recuperar_dados();
+    if(isset($_POST['Filtrar'])){
+        $slideId = sanitize_text_field($_POST['slideId']);
+        $dados = slide_image_rff_recuperar_dados_by_slide($slideId);
+    }else{
+        $dados = slide_image_rff_recuperar_dados();
+    }
     if ($dados) {
         // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
         echo '<br><strong>Dados Gravados</strong>';
-        echo '<table class="wp-list-table widefat fixed striped">';
-        echo '<thead><tr><th>ID</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Ações</th></tr></thead>';
+        echo '<br>Escolha o slide: ';
+        echo '<form method="post" action=""><select className="si-rff-status" name="slideId" style="'.$style_select.'; margin:0px;">';
+                        if($slideDados){
+                            foreach($slideDados as $slideDado){
+                                echo '<option value="'.esc_html($slideDado->id).'">'.esc_html($slideDado->title).'</option>';
+                            }
+                        }
+        echo '</select><input type="submit" class="si-rff-bt-submit" id="Filtrar" name="Filtrar" value="Filtrar"></form>';
+        if(isset($_POST['Filtrar'])){
+            $slideId = sanitize_text_field($_POST['slideId']);
+            $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($slideId));
+            echo '<span style="font-size:1.5rem;">Filtrado pelo slide: <strong>'.$slideSel->title.'</strong></span>';
+        }
+
+        echo '<table class="wp-list-table widefat fixed striped" style="table-layout: auto !important;">';
+        echo '<thead><tr><th>ID</th><th>Ordem</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Status</th><th>Ações</th></tr></thead>';
         echo '<tbody>';
         foreach ($dados as $dado) {
             $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
             echo '<tr>';
             echo '<form method="post" action="" enctype="multipart/form-data">';
             echo '<td><input type="hidden" value="'.esc_html($dado->id).'" name="id" id="id" />' . esc_html($dado->id) . '</td>';
+            echo '<td><input type="text" value="' . esc_html($dado->orderItems) . '" name="orderItems" id="orderItems" placeholder="O número na order dos elementos" size="5" /></td>';
             echo '<td><input type="text" value="' . esc_html($dado->title) . '" name="title" id="title" placeholder="Digite o título" /></td>';
             // echo '<td>' . esc_html($dado->urlImg) . '</td>';
             echo '<td>' . '<img src="'.$dado->urlImg.'" class="si-rff-img-admin"><input type="hidden" name="urlImg" id="urlImg" value="'.$dado->urlImg.'" /></td>';
@@ -188,6 +232,13 @@ if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
                             }
                         }
             echo        '</select></td>';
+
+            echo '<td><select className="si-rff-status" name="statusItem" style="'.$style_select.'; margin:0px;">
+                        <option value="'.esc_html($dado->statusItem).'">-> <span class="selSpan">'.esc_html($dado->statusItem).'</span> <-</option>';
+            echo        '<option value="Ativo">Ativo</option>';
+            echo        '<option value="Inativo">Inativo</option>';
+            echo        '</select></td>';
+
             echo '<td><input type="submit" class="si-rff-bt-submit" id="Editar" name="Editar" value="Editar" /><input type="submit" class="si-rff-bt-submit" id="Excluir" name="Excluir" value="Excluir" /></td>';
             echo '</form>';
             echo '</tr>';

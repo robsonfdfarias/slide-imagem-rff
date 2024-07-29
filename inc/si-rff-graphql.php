@@ -76,6 +76,14 @@ function register_custom_table_si_rff_in_graphql(){
                'type' => 'String',
                'description' => __( 'Texto alternativo do item do slide de imagem', 'your-textdomain' ),
            ],
+           'orderItems' => [
+               'type' => 'int',
+               'description' => __( 'Texto alternativo do item do slide de imagem', 'your-textdomain' ),
+           ],
+           'statusItem' => [
+               'type' => 'String',
+               'description' => __( 'Texto alternativo do item do slide de imagem', 'your-textdomain' ),
+           ],
        ],
    ]);
 
@@ -91,6 +99,14 @@ function register_custom_table_si_rff_in_graphql(){
                 'type' => 'String',
                 'description' => __('Título do item do slide de imagem', 'your-textdomain'),
             ],
+            'orderItems' => [
+                'type' => 'String',
+                'description' => __('Título do item do slide de imagem', 'your-textdomain'),
+            ],
+            'statusItem' => [
+                'type' => 'String',
+                'description' => __('Título do item do slide de imagem', 'your-textdomain'),
+            ],
         ],
        'resolve' => function($root, $args, $context, $info){
            global $wpdb;
@@ -103,11 +119,18 @@ function register_custom_table_si_rff_in_graphql(){
            if(!empty($args['title'])){
             $where_clauses[] = $wpdb->prepare("title like %s", "%".$args['title']."%");
            }
+           if(!empty($args['statusItem'])){
+            $where_clauses[] = $wpdb->prepare("statusItem = %s", $args['statusItem']);
+           }
            $where_sql = '';
            if(!empty($where_clauses) && sizeof($where_clauses)>0){
             $where_sql = 'WHERE '.implode(' And ', $where_clauses);
            }
-           $query = "SELECT * FROM $table_name $where_sql";
+           $order_sql = '';
+           if(!empty($args['orderItems'])){
+            $order_sql = " ORDER BY orderItems ".$args['orderItems'];
+           }
+           $query = "SELECT * FROM $table_name $where_sql $order_sql";
            $results = $wpdb->get_results($query);
            return $results;
        }
