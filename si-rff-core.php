@@ -51,7 +51,12 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     $style_select = "padding: 5px 15px; font-weight: bold; text-transform: uppercase; margin-top:-5px";
     ?>
     <div class="wrap">
-        <h1>Configuração do Slide Imagem RFF </h1>
+        <div id="si_rff_dados_info"></div>
+        <h1>
+            Configuração do Slide Imagem RFF 
+            <img src="<?php echo plugins_url('/', __FILE__); ?>wpgraphql-logo.svg" width="25" class="btGraphQl" title="Adicionar ao GraphQl" id="si_rff_img_info">
+            
+        </h1>
         <h2>Slides cadastrados</h2>
         <form method="post" action="" id="si-rff-form">
             <input type="text" name="titleSlide" placeholder="Digite o título" value="">
@@ -64,6 +69,10 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     </div>
     <?php
     ////////////////////////////////////////////////////
+    if(isset($_POST['graphql'])){
+        insertTableInGraphQl();
+        echo '<div class="notice notice-success is-dismissible"><p>Tabelas inseridas no WpGraphQl com sucesso!</p></div>';
+    }
     if(isset($_POST['cadastrar_slide_name'])){
         if((!isset($_POST['titleSlide']) || $_POST['titleSlide'] == '') && (!isset($_POST['slideStatus']) || $_POST['slideStatus'] == '')){
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
@@ -119,7 +128,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
             <!-- <input type="text" name="urlImg" placeholder="Digite a url da imagem" value=""> -->
             <input type="file" name="urlImg" id="urlImg" accept="image/*">
             <span id="infoBt" class="dashicons dashicons-info-outline" style="font-size:25px;vertical-align:text-bottom; padding-right: 1em;">
-                <div id="divInfo">A imagem deve ter 750px de largura por 235px de altura</div>
+                <div id="divInfo">A imagem deve ter 750px de largura por 235px de altura<br>(height = 31,3% do width)</div>
             </span>
             <input type="text" name="urlLink" placeholder="Digite a url do link" value="">
             <input type="text" name="altText" placeholder="Digite o texto que deve aparecer ao passar o mouse por cima da imagem" value="">

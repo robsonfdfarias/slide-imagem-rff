@@ -19,20 +19,25 @@
 
 
 function si_rff_ex($atts){
-    return '<h1>madjbndçjavçdajbvj</h1>';
+    return "<h1>madjbndçjavçdajbvj {$atts['slideId']}</h1>";
 }
  function si_rff_shortcode_slide1($atts){
     $html = '<p>vazio</p>';
+    // Define os atributos padrão
+    $atts = shortcode_atts(array(
+        'slideid' => '1',
+        'bar'=>'something else',
+    ), $atts);
     //mostra os dados gravados
-    $dados = slide_image_rff_recuperar_dados();
+    if(isset($atts['slideid'])){
+        $dados = slide_image_rff_recuperar_dados_by_slide(esc_attr($atts['slideid']));
+    }else{
+        $dados = slide_image_rff_recuperar_dados();
+    }
+    
     // print_r($dados);
     if ($dados) {
-        // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
-        $html = '<p><strong>Dados Gravados</strong>';
-        // $html .= '<table class="wp-list-table widefat fixed striped">';
-        // $html .= '<thead><tr><th>ID</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Ações</th></tr></thead>';
-        // $html .= '<tbody>';
-        
+        $html = "<p><strong>Dados Gravados</strong>";
             $html.= '<div style="max-width:750px !important; height: 235px; display:flex; overflow:hidden;">';
             $html.= '<div id="si_rff_imgs" style="width:750px; height: 235px; display:flex; transition: ease-in-out all 0.3s;">';
         foreach ($dados as $dado) {
@@ -45,20 +50,9 @@ function si_rff_ex($atts){
                             <a href="'.$dado->urlLink.'">'.$dado->altText.'</a>
                         </div>
                     </div>';
-            // $html .= '<tr>';
-            // $html .= '<td>' . esc_html($dado->id) . '</td>';
-            // $html .= '<td>' . esc_html($dado->title) . '</td>';
-            // // echo '<td>' . esc_html($dado->urlImg) . '</td>';
-            // $html .= '<td>' . '<img src="'.$dado->urlImg.'" class="si-rff-img-admin" style="max-width: 150px; max-height: 100px;"></td>';
-            // $html .= '<td>' . esc_html($dado->urlLink) . '</td>';
-            // $html .= '<td>' . esc_html($dado->altText) . '</td>';
-            // $html .= '<td>'.esc_html($slideSel->title).'</td>';
-            // $html .= '</tr>';
         }
             $html.= '</div>';
             $html.= '</div>';
-        // $html .= '</tbody>';
-        // $html .= '</table></p>';
     }
     return $html;
  }

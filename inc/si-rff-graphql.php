@@ -10,7 +10,7 @@
  }
 
  //Registrar tipos e campos no GraphQl tabela name slide
- add_action('graphql_register_types', 'register_custom_table_si_rff_name_in_graphql');
+//  add_action('graphql_register_types', 'register_custom_table_si_rff_name_in_graphql');
  function register_custom_table_si_rff_name_in_graphql(){
     register_graphql_object_type('CustomTableTypeSiRffName', [
         'fields' => [
@@ -52,7 +52,7 @@
  }
 
 //Registrar tipos e campos no GraphQl
-add_action('graphql_register_types', 'register_custom_table_si_rff_in_graphql');
+// add_action('graphql_register_types', 'register_custom_table_si_rff_in_graphql');
 function register_custom_table_si_rff_in_graphql(){
    register_graphql_object_type('CustomTableTypeSiRff', [
        'fields' => [
@@ -78,11 +78,15 @@ function register_custom_table_si_rff_in_graphql(){
            ],
            'orderItems' => [
                'type' => 'int',
-               'description' => __( 'Texto alternativo do item do slide de imagem', 'your-textdomain' ),
+               'description' => __( 'Ordem onde o item deve aparecer no slide', 'your-textdomain' ),
            ],
            'statusItem' => [
                'type' => 'String',
-               'description' => __( 'Texto alternativo do item do slide de imagem', 'your-textdomain' ),
+               'description' => __( 'Status do item do slide', 'your-textdomain' ),
+           ],
+           'tableId' => [
+               'type' => 'String',
+               'description' => __( 'Id do slide que contem as imagens', 'your-textdomain' ),
            ],
        ],
    ]);
@@ -107,6 +111,10 @@ function register_custom_table_si_rff_in_graphql(){
                 'type' => 'String',
                 'description' => __('Título do item do slide de imagem', 'your-textdomain'),
             ],
+            'tableId' => [
+                'type' => 'String',
+                'description' => __('Id do slide que contem as imagens', 'your-textdomain'),
+            ],
         ],
        'resolve' => function($root, $args, $context, $info){
            global $wpdb;
@@ -121,6 +129,9 @@ function register_custom_table_si_rff_in_graphql(){
            }
            if(!empty($args['statusItem'])){
             $where_clauses[] = $wpdb->prepare("statusItem = %s", $args['statusItem']);
+           }
+           if(!empty($args['tableId'])){
+            $where_clauses[] = $wpdb->prepare("tableId = %s", $args['tableId']);
            }
            $where_sql = '';
            if(!empty($where_clauses) && sizeof($where_clauses)>0){

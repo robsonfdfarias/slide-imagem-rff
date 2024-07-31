@@ -213,3 +213,13 @@ function slide_image_rff_editar_dados($id, $title, $urlImg, $urlLink, $altText, 
         echo '<div class="notice notice-success is-dismissible"><p>Dados alterados com sucesso!</p></div>';
     }
 }
+
+
+
+//--------------------------- Adiciona no GraphQl ---------------------------------------//
+function insertTableInGraphQl(){
+    //Registrar tipos e campos no GraphQl
+    add_action('graphql_register_types', 'register_custom_table_si_rff_in_graphql');
+    //Registrar tipos e campos no GraphQl tabela name slide
+    add_action('graphql_register_types', 'register_custom_table_si_rff_name_in_graphql');
+}
