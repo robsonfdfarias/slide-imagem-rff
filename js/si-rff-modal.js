@@ -87,10 +87,11 @@ function insertModal(){
         '<h2>Mais detalhes</h2>'+
         '<p>As instruções de como usar estão disponíveis no github, seguem os links importantes:</p>'+
         '<p style="padding-left:40px; margin-top: -15px;">'+
-          'Url do Github: <a href="https://github.com/robsonfdfarias/slide-imagem-rff">https://github.com/robsonfdfarias/slide-imagem-rff</a><br>'+
-          'Linkedin do author: <a href="https://www.linkedin.com/in/robson-farias-a8b01723a/">Robson Farias</a><br>'+
+          'Url do Github: <a href="https://github.com/robsonfdfarias/slide-imagem-rff" target="_blank">https://github.com/robsonfdfarias/slide-imagem-rff</a><br>'+
+          'Linkedin do author: <a href="https://www.linkedin.com/in/robson-farias-a8b01723a/" target="_blank">Robson Farias</a><br>'+
           'Email de contato: robsonfdfarias@gmail.com<br>'+
-          'Canal do youtube: <a href="https://www.youtube.com/c/Inform%C3%A1ticacomRobsonFarias">Canal informática com Robson Farias</a><br>'+
+          'Canal do youtube: <a href="https://www.youtube.com/c/Inform%C3%A1ticacomRobsonFarias" target="_blank">Canal informática com Robson Farias</a><br>'+
+          'Canal do youtube: <a href="https://www.youtube.com/@RobsonFarias-os2di" target="_blank">Robson Farias (code)</a><br>'+
         '</p>';
     div1.appendChild(div2);
     document.body.appendChild(div1);

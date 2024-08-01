@@ -55,7 +55,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
         <div id="si_rff_dados_info"></div>
         <h1>
             Configuração do Slide Imagem RFF 
-            <img src="<?php echo plugins_url('/', __FILE__); ?>wpgraphql-logo.svg" width="25" class="btGraphQl" title="Adicionar ao GraphQl" id="si_rff_img_info">
+            <img src="<?php echo plugins_url('/', __FILE__); ?>imginfo/youtube.svg" width="25" class="btGraphQl" title="Saiba como usar o plugin" id="si_rff_img_info">
             
         </h1>
         <h2>Slides cadastrados</h2>
