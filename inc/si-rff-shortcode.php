@@ -52,6 +52,43 @@ function si_rff_ex($atts){
                     </div>';
         }
             $html.= '</div>';
+            $html.= '</div></p>';
+    }
+    return $html;
+ }
+
+ function si_rff_shortcode_slide2($atts){
+    $html = '<p>vazio</p>';
+    // Define os atributos padrão
+    $atts = shortcode_atts(array(
+        'slideid' => '1',
+        'bar'=>'something else',
+    ), $atts);
+    //mostra os dados gravados
+    if(isset($atts['slideid'])){
+        $dados = slide_image_rff_recuperar_dados_by_slide(esc_attr($atts['slideid']));
+    }else{
+        $dados = slide_image_rff_recuperar_dados();
+    }
+    
+    // print_r($dados);
+    if ($dados) {
+        // $html = "<p><strong>Dados Gravados</strong>";
+        $html = "";
+            $html.= '<div style="max-width:100% !important; display:flex; overflow:hidden; position:absolute; left:0;">';
+            $html.= '<div id="si_rff_imgs2" style="100%; display:flex; transition: ease-in-out all 0.3s;">';
+        foreach ($dados as $dado) {
+            $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
+            $html .= '<div style="width:100vw; position: relative;">
+                        <div style="">
+                            <img src="'.$dado->urlImg.'" class="si-rff-img-admin" style="width:100vw;">
+                        </div>
+                        <div style="position:absolute;bottom:0px; width: 100vw; padding: 10px 20px; background-color: rgba(255,255,255,0.5); font-size: 2rem;">
+                            <a href="'.$dado->urlLink.'">'.$dado->altText.'</a>
+                        </div>
+                    </div>';
+        }
+            $html.= '</div>';
             $html.= '</div>';
     }
     return $html;
@@ -68,7 +105,7 @@ add_shortcode( 'foobar1', 'foobar_func1' );
 function si_rff_register_shortcodes(){
     //shortcodes registrados
     add_shortcode('si_rff_1', 'si_rff_shortcode_slide1');
-    add_shortcode('si_rff_2', 'si_rff_ex');
+    add_shortcode('si_rff_2', 'si_rff_shortcode_slide2');
 }
 
 add_action('init', 'si_rff_register_shortcodes');

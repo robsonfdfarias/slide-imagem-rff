@@ -16,9 +16,9 @@
  if(file_exists(SI_RFF_CORE_INC.'si-rff-functions.php')){
     require_once(SI_RFF_CORE_INC.'si-rff-functions.php');
 }
-if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
-    require_once(SI_RFF_CORE_INC.'si-rff-graphql.php');
-}
+// if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
+//     require_once(SI_RFF_CORE_INC.'si-rff-graphql.php');
+// }
 if(file_exists( SI_RFF_CORE_INC.'si-rff-shortcode.php' )){
   require_once( SI_RFF_CORE_INC.'si-rff-shortcode.php' );
 }
@@ -47,7 +47,8 @@ if(file_exists( SI_RFF_CORE_INC.'si-rff-shortcode.php' )){
 add_action('wp_enqueue_scripts', 'load_dashicons');
 
  function slide_image_rff_admin_page(){
-    // slide_image_rff_install();
+    // Passar a URL do plugin para o script JavaScript
+    echo '<script>localStorage.setItem("pluginPath", '.plugins_url('', __FILE__).'); </script>';
     $style_select = "padding: 5px 15px; font-weight: bold; text-transform: uppercase; margin-top:-5px";
     ?>
     <div class="wrap">
@@ -69,10 +70,10 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     </div>
     <?php
     ////////////////////////////////////////////////////
-    if(isset($_POST['graphql'])){
-        insertTableInGraphQl();
-        echo '<div class="notice notice-success is-dismissible"><p>Tabelas inseridas no WpGraphQl com sucesso!</p></div>';
-    }
+    // if(isset($_POST['graphql'])){
+    //     // insertTableInGraphQl();
+    //     echo '<div class="notice notice-success is-dismissible"><p>Tabelas inseridas no WpGraphQl com sucesso!</p></div>';
+    // }
     if(isset($_POST['cadastrar_slide_name'])){
         if((!isset($_POST['titleSlide']) || $_POST['titleSlide'] == '') && (!isset($_POST['slideStatus']) || $_POST['slideStatus'] == '')){
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos!</p></div>';
