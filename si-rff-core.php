@@ -123,11 +123,14 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     ?>
     <div class="wrap">
         <h2>Conteúdo dos slides </h2>
-        <form method="post" action="" enctype="multipart/form-data" id="si-rff-form">
+        <form method="post" action="" enctype="multipart/form-data" id="si_rff_form">
             <input type="text" name="orderItems" placeholder="O número na order dos elementos" value="">
             <input type="text" name="title" placeholder="Digite o título" value="">
             <!-- <input type="text" name="urlImg" placeholder="Digite a url da imagem" value=""> -->
-            <input type="file" name="urlImg" id="urlImg" accept="image/*">
+            <span>
+                <label for="urlImg">Selecionar arquivo</label>
+                <input type="file" name="urlImg" id="urlImg" accept="image/*">
+            </span>
             <span id="infoBt" class="dashicons dashicons-info-outline" style="font-size:25px;vertical-align:text-bottom; padding-right: 1em;">
                 <div id="divInfo">A imagem deve ter 750px de largura por 235px de altura<br>(height = 31,3% do width)</div>
             </span>

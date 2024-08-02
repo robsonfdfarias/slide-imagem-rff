@@ -31,8 +31,19 @@ function si_rff_adicionar_link_detalhes($links) {
   array_unshift($links, $link_detalhes);
   return $links;
 }
+//adicionar do lado do botão desativar plugin
+// add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'si_rff_adicionar_link_detalhes');
 
-add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'si_rff_adicionar_link_detalhes');
+
+//adicionar do lado do autor
+function adicionar_link_detalhes_meta($links, $file) {
+  if ($file == plugin_basename(__FILE__)) {
+      $link_detalhes = '<a href="#" class="si-rff-detalhes-link">Detalhes</a>';
+      array_push($links, $link_detalhes);
+  }
+  return $links;
+}
+add_filter('plugin_row_meta', 'adicionar_link_detalhes_meta', 10, 2);
 
 // Adiciona o CSS e JS necessários para o modal
 function si_rff_adicionar_scripts() {

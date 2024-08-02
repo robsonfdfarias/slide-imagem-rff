@@ -8,7 +8,7 @@
     font-weight: bold;
 }
 
-#si-rff-form input[type='file'], input[type='text'] {
+#si_rff_form input[type='file'], input[type='text'] {
     padding: 5px 10px;
 }
 
@@ -54,4 +54,25 @@
 #si_rff_dados_info{
     /* padding: 15px 30px;
     border: 1px solid #cdcdcd; */
+}
+
+
+#si_rff_form {
+    display: ruby;
+}
+#si_rff_form span input[type="file"]{
+    display: none;
+}
+
+#si_rff_form span label {
+    padding: 10px 20px;
+    background-color: #8bc9a5;
+    color: #000000;
+    text-transform: uppercase;
+    text-align: center;
+    display: block;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: -5px;
 }
