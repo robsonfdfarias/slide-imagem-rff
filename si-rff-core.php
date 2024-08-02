@@ -13,9 +13,18 @@
 /**
    * Includes PHP
    */
- if(file_exists(SI_RFF_CORE_INC.'si-rff-functions.php')){
-    require_once(SI_RFF_CORE_INC.'si-rff-functions.php');
+//  if(file_exists(SI_RFF_CORE_INC.'si-rff-functions.php')){
+//     require_once(SI_RFF_CORE_INC.'si-rff-functions.php');
+// }
+if(file_exists(SI_RFF_CORE_INC.'si-rff-functions-class.php')){
+   require_once(SI_RFF_CORE_INC.'si-rff-functions-class.php');
 }
+if(file_exists(SI_RFF_CORE_INC.'si-rff-upload-class.php')){
+   require_once(SI_RFF_CORE_INC.'si-rff-upload-class.php');
+}
+$conection_si_rff = new SiRffConection();
+$upload_si_rff = new SiRffUpload();
+
 // if(file_exists(SI_RFF_CORE_INC.'si-rff-graphql.php')){
 //     require_once(SI_RFF_CORE_INC.'si-rff-graphql.php');
 // }
@@ -47,6 +56,8 @@ if(file_exists( SI_RFF_CORE_INC.'si-rff-shortcode.php' )){
 add_action('wp_enqueue_scripts', 'load_dashicons');
 
  function slide_image_rff_admin_page(){
+    global $conection_si_rff;
+    global $upload_si_rff;
     // Passar a URL do plugin para o script JavaScript
     echo '<script>localStorage.setItem("pluginPath", '.plugins_url('', __FILE__).'); </script>';
     $style_select = "padding: 5px 15px; font-weight: bold; text-transform: uppercase; margin-top:-5px";
@@ -80,7 +91,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
         }else{
             $slideTitulo = sanitize_text_field($_POST['titleSlide']);
             $slideStatus = sanitize_text_field($_POST['slideStatus']);
-            slide_image_name_rff_gravar_dados($slideTitulo, $slideStatus);
+            $conection_si_rff->slide_image_name_rff_gravar_dados($slideTitulo, $slideStatus);
             echo '<div class="notice notice-success is-dismissible"><p>Slide cadastrado com sucesso!</p></div>';
         }
     }else if(isset($_POST['EditarSlide'])){
@@ -91,11 +102,11 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
             $slideTitulo = sanitize_text_field($_POST['titleSlide']);
             $slideStatus = sanitize_text_field($_POST['slideStatus']);
             //A mensagem com o status da atualização é retornada pela função slide_image_name_rff_editar_dados
-            slide_image_name_rff_editar_dados($idSlide, $slideTitulo, $slideStatus);
+            $conection_si_rff->slide_image_name_rff_editar_dados($idSlide, $slideTitulo, $slideStatus);
         }
     }
 
-    $slideDados = slide_image_name_rff_recuperar_dados();
+    $slideDados = $conection_si_rff->slide_image_name_rff_recuperar_dados();
     if($slideDados){
         echo '<br><strong>Dados Gravados</strong>';
         echo '<table class="wp-list-table widefat fixed striped" style="table-layout: auto !important;">';
@@ -157,7 +168,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     if(isset($_POST['Editar']) && isset($_POST['id']) && isset($_POST['title']) && isset($_POST['urlImg']) && isset($_POST['urlLink']) && isset($_POST['altText']) && isset($_POST['slideId']) && $_POST['slideId']!=''){
         if($_POST['id']!='' && $_POST['title']!='' && $_POST['urlImg']!='' && $_POST['urlLink']!='' && $_POST['altText']!='' && isset($_POST['slideId']) && $_POST['slideId']!=''){
             //A mensagem com o status da atualização é retornada pela função slide_image_rff_editar_dados()
-            slide_image_rff_editar_dados(
+            $conection_si_rff->slide_image_rff_editar_dados(
                 $_POST['id'], 
                 $_POST['title'], 
                 $_POST['urlImg'], 
@@ -180,19 +191,19 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
             $orderItems = sanitize_text_field($_POST['orderItems']);
             $statusItem = sanitize_text_field($_POST['statusItem']);
             // printf($urlImg);
-            $image = uploadImage_si_rff($urlImg);
+            $image = $upload_si_rff->uploadImage_si_rff($urlImg);
             // echo '//-----------------------------------//<br>';
             // echo $image;
             // echo '<br>........................................';
             // menuImage_rff_gravar_dados($title, $urlImg, $urlLink, $altText);
-            slide_image_rff_gravar_dados($title, $image, $urlLink, $altText, $slideId, $orderItems, $statusItem);
+            $conection_si_rff->slide_image_rff_gravar_dados($title, $image, $urlLink, $altText, $slideId, $orderItems, $statusItem);
             echo '<div class="notice notice-success is-dismissible"><p>Dados gravados com sucesso!</p></div>';
         }else{
             echo '<div class="notice notice-failure is-dismissible"><p>Todos os campos precisam ser preenchidos! Lembre de ter pelo menos um slide cadastrado para adicionar um item</p></div>';
         }
     }else if(isset($_POST['Excluir']) && isset($_POST['id'])){
         if($_POST['id']!=''){
-            slide_image_rff_excluir_dados($_POST['id'], $_POST['urlImg']);
+            $conection_si_rff->slide_image_rff_excluir_dados($_POST['id'], $_POST['urlImg']);
             echo '<div class="notice notice-success is-dismissible"><p>Registro excluído com sucesso!</p></div>';
         }else{
             echo '<div class="notice notice-failure is-dismissible"><p>Não foi possível excluir o registro!</p></div>';
@@ -202,9 +213,9 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     //mostra os dados gravados
     if(isset($_POST['Filtrar'])){
         $slideId = sanitize_text_field($_POST['slideId']);
-        $dados = slide_image_rff_recuperar_dados_by_slide($slideId);
+        $dados = $conection_si_rff->slide_image_rff_recuperar_dados_by_slide($slideId);
     }else{
-        $dados = slide_image_rff_recuperar_dados();
+        $dados = $conection_si_rff->slide_image_rff_recuperar_dados();
     }
     if ($dados) {
         // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
@@ -219,7 +230,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
         echo '</select><input type="submit" class="si-rff-bt-submit" id="Filtrar" name="Filtrar" value="Filtrar"></form>';
         if(isset($_POST['Filtrar'])){
             $slideId = sanitize_text_field($_POST['slideId']);
-            $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($slideId));
+            $slideSel = $conection_si_rff->slide_image_name_rff_recuperar_dados_por_ID(esc_html($slideId));
             echo '<span style="font-size:1.5rem;">Filtrado pelo slide: <strong>'.$slideSel->title.'</strong></span>';
         }
 
@@ -227,7 +238,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
         echo '<thead><tr><th>ID</th><th>Ordem</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Status</th><th>Ações</th></tr></thead>';
         echo '<tbody>';
         foreach ($dados as $dado) {
-            $slideSel = slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
+            $slideSel = $conection_si_rff->slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
             echo '<tr>';
             echo '<form method="post" action="" enctype="multipart/form-data">';
             echo '<td><input type="hidden" value="'.esc_html($dado->id).'" name="id" id="id" />' . esc_html($dado->id) . '</td>';
