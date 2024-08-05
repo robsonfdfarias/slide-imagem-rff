@@ -79,7 +79,8 @@ function si_rff_ex($atts){
     if ($dados) {
         // $html = "<p><strong>Dados Gravados</strong>";
         $html = "";
-            $html.= '<div style="max-width:100% !important; display:flex; overflow:hidden; position:absolute; left:0;">';
+            // $html.= '<div id="si_rff_geral_slide" style="max-width:100vw !important; display:flex; position:relative; left: 0;">';
+            $html.= '<div style="max-width:100vw !important; display:flex; overflow:hidden; position:absolute; left:0;">';
             $html.= '<div id="si_rff_imgs2" style="100%; display:flex; transition: ease-in-out all 0.3s;">';
         foreach ($dados as $dado) {
             $slideSel = $conection_si_rff->slide_image_name_rff_recuperar_dados_por_ID(esc_html($dado->tableId));
@@ -94,6 +95,9 @@ function si_rff_ex($atts){
         }
             $html.= '</div>';
             $html.= '</div>';
+            $html.= '<div id="si_rff_geral_slide" style="max-width:100% !important; display:flex; position:relative; left: 0;">';
+            $html.= '</div>';
+            // $html.= '</div>';
     }
     return $html;
  }
