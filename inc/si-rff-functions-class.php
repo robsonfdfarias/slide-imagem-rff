@@ -117,7 +117,8 @@ class SiRffConection {
     function slide_image_rff_recuperar_dados_by_slide($slideId){
         global $wpdb;
         $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME;
-        $results = $wpdb->get_results("SELECT * FROM $table_name WHERE tableId = $slideId");
+        $status = 'Ativo';
+        $results = $wpdb->get_results("SELECT * FROM $table_name WHERE tableId = $slideId AND statusItem = '$status'");
         return $results;
     }
 
