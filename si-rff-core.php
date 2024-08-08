@@ -71,7 +71,7 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
         </h1>
         <h2>Slides cadastrados</h2>
         <form method="post" action="" id="si-rff-form">
-            <input type="text" name="titleSlide" placeholder="Digite o título" value="">
+            <input type="text" name="titleSlide" placeholder="Digite o título" value="" required>
             <select className="si-rff-status" name="slideStatus" style="<?php echo $style_select; ?>">
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
@@ -135,18 +135,18 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     <div class="wrap">
         <h2>Conteúdo dos slides </h2>
         <form method="post" action="" enctype="multipart/form-data" id="si_rff_form">
-            <input type="text" name="orderItems" placeholder="O número na order dos elementos" value="">
-            <input type="text" name="title" placeholder="Digite o título" value="">
+            <input type="text" name="orderItems" placeholder="O número na order dos elementos" value="" required>
+            <input type="text" name="title" placeholder="Digite o título" value="" required>
             <!-- <input type="text" name="urlImg" placeholder="Digite a url da imagem" value=""> -->
             <span>
                 <label for="urlImg">Selecionar arquivo</label>
-                <input type="file" name="urlImg" id="urlImg" accept="image/*">
+                <input type="file" name="urlImg" id="urlImg" accept="image/*" required>
             </span>
             <span id="infoBt" class="dashicons dashicons-info-outline" style="font-size:25px;vertical-align:text-bottom; padding-right: 1em;">
                 <div id="divInfo">A imagem deve ter 750px de largura por 235px de altura<br>(height = 31,3% do width)</div>
             </span>
-            <input type="text" name="urlLink" placeholder="Digite a url do link" value="">
-            <input type="text" name="altText" placeholder="Digite o texto que deve aparecer ao passar o mouse por cima da imagem" value="">
+            <input type="text" name="urlLink" placeholder="Digite a url do link" value="" required>
+            <input type="text" name="altText" placeholder="Digite o texto que deve aparecer ao passar o mouse por cima da imagem" value="" required>
             
             <select className="si-rff-status" name="slideId" style="<?php echo $style_select; ?>">
                 <?php
@@ -242,12 +242,12 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
             echo '<tr>';
             echo '<form method="post" action="" enctype="multipart/form-data">';
             echo '<td><input type="hidden" value="'.esc_html($dado->id).'" name="id" id="id" />' . esc_html($dado->id) . '</td>';
-            echo '<td><input type="text" value="' . esc_html($dado->orderItems) . '" name="orderItems" id="orderItems" placeholder="O número na order dos elementos" size="5" /></td>';
-            echo '<td><input type="text" value="' . esc_html($dado->title) . '" name="title" id="title" placeholder="Digite o título" /></td>';
+            echo '<td><input type="text" value="' . esc_html($dado->orderItems) . '" name="orderItems" id="orderItems" placeholder="O número na order dos elementos" size="5" required /></td>';
+            echo '<td><input type="text" value="' . esc_html($dado->title) . '" name="title" id="title" placeholder="Digite o título" required /></td>';
             // echo '<td>' . esc_html($dado->urlImg) . '</td>';
             echo '<td>' . '<img src="'.$dado->urlImg.'" class="si-rff-img-admin"><input type="hidden" name="urlImg" id="urlImg" value="'.$dado->urlImg.'" /></td>';
-            echo '<td><input type="text" value="' . esc_html($dado->urlLink) . '" name="urlLink" id="urlLink" placeholder="Digite a url do link" /></td>';
-            echo '<td><input type="text" value="' . esc_html($dado->altText) . '" name="altText" id="altText" placeholder="Digite o texto alternativo" /></td>';
+            echo '<td><input type="text" value="' . esc_html($dado->urlLink) . '" name="urlLink" id="urlLink" placeholder="Digite a url do link" required /></td>';
+            echo '<td><input type="text" value="' . esc_html($dado->altText) . '" name="altText" id="altText" placeholder="Digite o texto alternativo" required /></td>';
             echo '<td><select className="si-rff-status" name="slideId" style="'.$style_select.'; margin:0px;">
                         <option value="'.esc_html($slideSel->id).'">-> <span class="selSpan">'.esc_html($slideSel->title).'</span> <-</option>';
                         if($slideDados){
