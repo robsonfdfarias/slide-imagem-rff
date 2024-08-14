@@ -31,6 +31,9 @@ $upload_si_rff = new SiRffUpload();
 if(file_exists( SI_RFF_CORE_INC.'si-rff-shortcode.php' )){
   require_once( SI_RFF_CORE_INC.'si-rff-shortcode.php' );
 }
+if(file_exists( SI_RFF_CORE_INC.'si-rff-filter.php' )){
+  require_once( SI_RFF_CORE_INC.'si-rff-filter.php' );
+}
 // function add_font_awesome() {
 //     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 // }
@@ -103,6 +106,12 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
             $slideStatus = sanitize_text_field($_POST['slideStatus']);
             //A mensagem com o status da atualização é retornada pela função slide_image_name_rff_editar_dados
             $conection_si_rff->slide_image_name_rff_editar_dados($idSlide, $slideTitulo, $slideStatus);
+        }
+    }else if(isset($_POST['ExcluirSlide'])){
+        if(isset($_POST['idSlide'])){
+            $conection_si_rff->slide_image_name_rff_excluir_dados($_POST['idSlide']);
+        }else{
+            echo '<div class="notice notice-failure is-dismissible"><p>ID não recuperado!</p></div>';
         }
     }
 
@@ -211,29 +220,40 @@ add_action('wp_enqueue_scripts', 'load_dashicons');
     }
     //
     //mostra os dados gravados
+    // if(isset($_POST['Filtrar'])){
+    //     $slideId = sanitize_text_field($_POST['slideId']);
+    //     $dados = $conection_si_rff->slide_image_rff_recuperar_dados_by_slide($slideId);
+    // }else{
+    //     $dados = $conection_si_rff->slide_image_rff_recuperar_dados();
+    // }
+    //Instância a classe que controla o filtro
+    $siRffFilter = new SIRffFilter();
+    //Testa se algum filtro foi criado
     if(isset($_POST['Filtrar'])){
-        $slideId = sanitize_text_field($_POST['slideId']);
-        $dados = $conection_si_rff->slide_image_rff_recuperar_dados_by_slide($slideId);
-    }else{
-        $dados = $conection_si_rff->slide_image_rff_recuperar_dados();
+        //Salva o filtro no arquivo de filtro
+        $siRffFilter->save_filter($_POST['slideId']);
     }
-    if ($dados) {
-        // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
+    //Retorna o val, contendo o valor null ou o id do slide, e retorna o dados, contendo os itens gerais ou o selecionado pelo filtro
+    $filtro = $siRffFilter->read_filter($conection_si_rff);
         echo '<br><strong>Dados Gravados</strong>';
-        echo '<br>Escolha o slide: ';
         echo '<form method="post" action=""><select className="si-rff-status" name="slideId" style="'.$style_select.'; margin:0px;">';
+                echo '<option value="0">Todos</option>';
                         if($slideDados){
                             foreach($slideDados as $slideDado){
                                 echo '<option value="'.esc_html($slideDado->id).'">'.esc_html($slideDado->title).'</option>';
                             }
                         }
-        echo '</select><input type="submit" class="si-rff-bt-submit" id="Filtrar" name="Filtrar" value="Filtrar"></form>';
-        if(isset($_POST['Filtrar'])){
-            $slideId = sanitize_text_field($_POST['slideId']);
-            $slideSel = $conection_si_rff->slide_image_name_rff_recuperar_dados_por_ID(esc_html($slideId));
-            echo '<span style="font-size:1.5rem;">Filtrado pelo slide: <strong>'.$slideSel->title.'</strong></span>';
+        echo '</select><input type="submit" class="si-rff-bt-submit" id="Filtrar" name="Filtrar" value="Filtrar">';
+        if($filtro['val']!=null){
+            // $slideId = sanitize_text_field($_POST['slideId']);
+            $slideSel = $conection_si_rff->slide_image_name_rff_recuperar_dados_por_ID($filtro['val']);
+            echo ' <span style="font-size:1.5rem;">Filtrado pelo slide: <strong>'.$slideSel->title.'</strong></span>';
         }
+        echo '</form>';
+        $dados = $filtro['dados'];
 
+    if ($dados) {
+        // echo '<img src="'.$dados[0]->urlImg.'" width="100">';
         echo '<table class="wp-list-table widefat fixed striped" style="table-layout: auto !important;">';
         echo '<thead><tr><th>ID</th><th>Ordem</th><th>Título</th><th>Url Image</th><th>Url Link</th><th>Texto alternativo</th><th>Nome do slide</th><th>Status</th><th>Ações</th></tr></thead>';
         echo '<tbody>';

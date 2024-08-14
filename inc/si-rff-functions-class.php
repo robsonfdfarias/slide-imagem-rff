@@ -53,11 +53,16 @@ class SiRffConection {
     function slide_image_name_rff_excluir_dados($id){
         global $wpdb;
         $table_name = $wpdb->prefix.SI_RFF_TABLE_NAME_SLIDE;
-        $wpdb->delete(
+        $retorno = $wpdb->delete(
             $table_name,
             array('id' => $id), //Condição para atualizar (WHERE id = $id)
             array('%d') //Tipo de dado da condição (%d indica que o valor é um inteiro)
         );
+        if($retorno<=0 || $retorno==false){
+            echo '<div class="notice notice-failure is-dismissible"><p>Não foi possível excluir o slide!</p></div>';
+        }else{
+            echo '<div class="notice notice-success is-dismissible"><p>Slide excluído com sucesso!</p></div>';
+        }
     }
 
     //Editar registro
