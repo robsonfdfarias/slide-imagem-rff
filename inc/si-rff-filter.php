@@ -8,13 +8,13 @@ if(!defined('WPINC')){
     die();
 }
 
-$fileName = SI_RFF_DIR_IMG.'filtro.txt';
+$fileNameSI = SI_RFF_DIR_IMG.'filtro.txt';
 
 class SIRffFilter {
     function save_filter($valor){
-        global $fileName;
+        global $fileNameSI;
         if(isset($valor)){
-            $arq = fopen($fileName, 'w');
+            $arq = fopen($fileNameSI, 'w');
             fwrite($arq, $valor);
             fclose($arq);
             // echo 'Arquivo salvo';
@@ -24,12 +24,12 @@ class SIRffFilter {
     }
 
     function read_filter($conn){
-        global $fileName;
+        global $fileNameSI;
         if(isset($conn)){
-            if(!file_exists($fileName)){
+            if(!file_exists($fileNameSI)){
                 $this->save_filter("0");
             }
-            $linhas = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $linhas = file($fileNameSI, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $val = null;
             if($linhas===false){
                 $dados = $conn->slide_image_rff_recuperar_dados();
